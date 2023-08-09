@@ -4,7 +4,7 @@ using UnityEngine;
 
 using UnityEngine.Networking;
 
-public class SignUp : MonoBehaviour
+public class SignUp_640k : MonoBehaviour
 {
     string singupUri = "http://127.0.0.1/signup.php";
 
