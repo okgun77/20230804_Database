@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Tower
   - Stage
+  - Missile
   layers:
   - Default
   - TransparentFX
