@@ -7,10 +7,14 @@ public class Tower : MonoBehaviour
 
     // Liner Interpolation선형보간
 
-    [SerializeField][Range(1f, 20f)] private float rotSpeed = 10f;   // 타워 회전속도
+    [SerializeField][Range(1f, 10f)] private float rotSpeed = 3f;   // 타워 회전속도
     [SerializeField] private GameObject missilePrefab = null;
+    [SerializeField] private int maxMissileCount = 3;
 
     private MissileSpawnPoint missileSpawnPoint = null;
+    private Coroutine attackCoroutine = null;
+    private List<Missile> missileList = new List<Missile>();
+
 
     private void Awake()
     {
@@ -18,12 +22,30 @@ public class Tower : MonoBehaviour
     }
 
 
-    public void Attack(Vector3 _targetPos)
+    private void Start()
     {
-        StartCoroutine(AttackCoroutine(_targetPos));
+        for (int i = 0; i < maxMissileCount; ++i)
+        {
+            GameObject missile = Instantiate(missilePrefab);
+            missile.name = "Missile_" + i;
+            missile.SetActive(false);   // 꺼져있으면 Find로 해도 못찾음. 우리는 목록으로 관리를 해서 상관없음.
+            missileList.Add(missile.GetComponent<Missile>());
+        }
     }
 
-    private IEnumerator AttackCoroutine(Vector3 _targetPos)
+    public void Attack(Vector3 _targetPos, Explosion.HitCallback _hitCallback = null)
+    {
+        // StartCoroutine("AttackCoroutine", _targetPos);
+        // StopCoroutine("AttackCoroutine");    // 무조건 다 세우는것
+
+        if (attackCoroutine != null)
+            StopCoroutine(attackCoroutine);
+
+        attackCoroutine = StartCoroutine(AttackCoroutine(_targetPos, _hitCallback));
+    }
+
+
+    private IEnumerator AttackCoroutine(Vector3 _targetPos, Explosion.HitCallback _hitCallback)
     {
         // 회전 Yow, 선형보간, 각도 구하기(세타)
         // 아크탄젠트를 이용하면 각도를 구할 수 있다. x,z
@@ -37,10 +59,20 @@ public class Tower : MonoBehaviour
         float myAngle = AngleToTarget(transform.position, transform.forward);   // 타워 각도
         float targetAngle = AngleToTarget(transform.position, _targetPos);      // 타겟 각도
 
-        float deltaAngle = Mathf.DeltaAngle(myAngle, targetAngle);  
+        float deltaAngle = Mathf.DeltaAngle(myAngle, targetAngle);              // s값 보정
 
         float t = 0f;
         float s = Mathf.Abs(myAngle - targetAngle) / 360f; // 절대값 구하기
+        
+        // 제일 많이 사용하는 방식
+        // Quaternion from = transform.rotation;
+        // Quaternion to = Quaternion.LookRotation(_targetPos - transform.position);
+
+        // Vector3.MoveTowards      // 파라미터에 속도를 넣어서 그 속도로 등속운동을 한다.
+        // Vector3.SmoothDamp       // 갈수록 천천히...
+        // Vector3.Slerp            // 곡선으로 선형보간을 하는 방식. 구형 보간, 3인칭시점 카메라 구현에 사용
+        // Vector3.LerpUnclamped    // 0~1의 제한을 두지 않는다.
+
 
         while (t < 1f)
         {
@@ -48,9 +80,16 @@ public class Tower : MonoBehaviour
             float angle = Mathf.LerpAngle(myAngle, myAngle + deltaAngle, t);    // Mathf.LerpAngle 사용
             RotateYaw(angle);
 
+            // float angle = Mathf.LerpAngle(myAngle, targetAngle, t);
+            // RotateYaw(angle);
 
-            // t += Time.deltaTime / s;
+            // 제일 많이 사용하는 방식
+            // transform.rotation = Quaternion.Lerp(from, to, t);
+
+            // t += Time.deltaTime / s;     // s값도 보정을 해줘야 한다.
+            // t += (Time.deltaTime * rotSpeed) / s;
             t += Time.deltaTime * rotSpeed;
+            
             yield return null;
         }
 
@@ -64,12 +103,25 @@ public class Tower : MonoBehaviour
 
 
         // 공격
+        /*
         GameObject missile = Instantiate(
             missilePrefab,
             missileSpawnPoint.GetSpawnPoint(),
             missileSpawnPoint.GetRotation()
             );    // 미사일 객체 만들기
         missile.GetComponent<Missile>().Init(_targetPos);
+        */
+
+        Missile missile = GetUsableMissile();
+        if (missile)
+        {
+            missile.Init(
+                missileSpawnPoint.GetSpawnPoint(),
+                missileSpawnPoint.GetRotation(),
+                _targetPos,
+                _hitCallback
+                );
+        }
 
     }
 
@@ -117,5 +169,14 @@ public class Tower : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, -_rotY + 90f, 0f);
     }
 
+
+    private Missile GetUsableMissile()
+    {
+        foreach (Missile missile in missileList)
+        {
+            if (!missile.gameObject.activeSelf) return missile; // 있으면 missile 반환
+        }
+        return null;    // 없으면 null 반환
+    }
 
 }

@@ -21,8 +21,16 @@ public class GameManager : MonoBehaviour
             Vector3 point = Vector3.zero;
             if (inputMouse.Picking("Stage", ref point))
             {
-                tower.Attack(point);
+                tower.Attack(point, HitCallback);
             }
+        }
+    }
+
+    public void HitCallback(List<Enemy> _hitList)
+    {
+        foreach (Enemy enemy in _hitList)
+        {
+            Destroy(enemy.gameObject);
         }
     }
 
