@@ -246,6 +246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c486be086a09e54bb80134b534b2278, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyMng: {fileID: 841288045}
 --- !u!4 &81107895
 Transform:
   m_ObjectHideFlags: 0
@@ -415,6 +416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotSpeed: 3
   missilePrefab: {fileID: 8276415502682136769, guid: 0647ae01735b39243a5f1e3cfbbdbd3e, type: 3}
+  maxMissileCount: 3
 --- !u!1 &588440330
 GameObject:
   m_ObjectHideFlags: 0

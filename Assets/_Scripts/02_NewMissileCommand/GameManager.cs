@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    // manager : mng, mgr
+    [SerializeField] private EnemyManager enemyMng= null;
+
     private Tower tower = null;
     private InputMouse inputMouse = null;
 
@@ -12,6 +15,11 @@ public class GameManager : MonoBehaviour
         GameObject towerGo = GameObject.FindWithTag("Tower");   // 하이어라키에 있는 객체중에 태그로 찾기
         tower = towerGo.GetComponent<Tower>();
         inputMouse = InputMouse.Instance;
+    }
+
+    private void Start()
+    {
+        enemyMng.Init(tower.gameObject);
     }
 
     private void Update()
@@ -26,12 +34,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void HitCallback(List<Enemy> _hitList)
+    public void HitCallback(List<IPoolingObject> _hitList)
     {
-        foreach (Enemy enemy in _hitList)
-        {
-            Destroy(enemy.gameObject);
-        }
+        //foreach (Enemy enemy in _hitList)
+        //{
+        //    Destroy(enemy.gameObject);
+        //}
+        enemyMng.SetDamages(_hitList);
     }
 
 }

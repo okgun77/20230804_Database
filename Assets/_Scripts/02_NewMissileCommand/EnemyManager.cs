@@ -8,6 +8,12 @@ public class EnemyManager : MonoBehaviour
 
     [SerializeField] private int maxEnemyCount = 20;
 
+    // class PoolManager
+    // private PoolingObject[] enemies = null;
+    // -> Init, Release
+    private IPoolingObject[] enemies = null;
+    
+
     private void Awake()
     {
         // 템플릿 이용 방식. 리소스를 불러올 때 이 방법이 제일 빠르다.
@@ -21,8 +27,10 @@ public class EnemyManager : MonoBehaviour
         enemyPrefab = Resources.Load("_Prefabs\\P_Enemy") as GameObject;
     }
 
-    private void Start()
+    public void Init(GameObject _target)
     {
+        enemies = new IPoolingObject[maxEnemyCount];
+
         for (int i = 0; i < maxEnemyCount; ++i)
         {
             GameObject go =
@@ -33,18 +41,61 @@ public class EnemyManager : MonoBehaviour
                     transform
                     );
             go.name = "Enemy_" + i;
+
+            enemies[i] = go.GetComponent<IPoolingObject>();
+            ((Enemy)enemies[i]).SetTarget(_target);
+            ((Enemy)enemies[i]).Release();
         }
+
+        StartCoroutine(RespawnCoroutine());
+
     }
 
     private Vector3 GetRandomPosition()
     {
-        Vector2 rnd = Random.insideUnitCircle * 20f;
-        return new Vector3(rnd.x, 0f, rnd.y);
+        //Vector2 rnd = Random.insideUnitCircle * 20f;
+        //return new Vector3(rnd.x, 0f, rnd.y);
 
-        //float angle = Random.Range(0f, 360f);
-        //float x = Mathf.Cos(angle);
-        //float z = Mathf.Sin(angle);
+        float angle = Random.Range(0f, 360f);
+        float x = Mathf.Cos(angle);
+        float z = Mathf.Sin(angle);
         
-        //return new Vector3(x, 0f, z) * 13f;
+        return new Vector3(x, 0f, z) * 13f;
+    }
+
+    public void SetDamages(List<IPoolingObject> _hitList)
+    {
+        
+        foreach (IPoolingObject enemy in enemies)
+        {
+            foreach (IPoolingObject target in _hitList)
+            {
+                if (enemy.Equals(target))
+                {
+                    // Release
+                    // Destroy(enemy.gameObject);
+                    enemy.Release();
+                    continue;
+                }
+            }
+        }
+    }
+
+    private IEnumerator RespawnCoroutine()
+    {
+        while (true)
+        {
+            foreach (Enemy enemy in enemies)
+            {
+                if (!enemy.IsAlive())
+                {
+                    enemy.SetPosition(GetRandomPosition());
+                    enemy.Init();
+                    break;
+                }
+            }
+
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 }

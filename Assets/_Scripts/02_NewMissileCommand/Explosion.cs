@@ -6,7 +6,7 @@ public class Explosion : MonoBehaviour
 {
 
     public delegate void FinishCallback();
-    public delegate void HitCallback(List<Enemy> _hitList);
+    public delegate void HitCallback(List<IPoolingObject> _hitList);
 
 
     private readonly float maxScale;
@@ -59,13 +59,13 @@ public class Explosion : MonoBehaviour
 
         if (hits.Length > 0)
         {
-            List<Enemy> hitList = new List<Enemy>();
+            List<IPoolingObject> hitList = new List<IPoolingObject>();
             foreach (RaycastHit hit in hits)
             {
                 if (hit.transform.CompareTag("Enemy"))
                 {
                     // Debug.Log(hit.transform.name);
-                    hitList.Add(hit.transform.GetComponent<Enemy>());
+                    hitList.Add(hit.transform.GetComponent<IPoolingObject>());
                 }
             }
             _hitCallback?.Invoke(hitList);
