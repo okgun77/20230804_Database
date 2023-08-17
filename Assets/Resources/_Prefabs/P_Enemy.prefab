@@ -11,6 +11,10 @@ GameObject:
   - component: {fileID: 4130430112942280747}
   - component: {fileID: 3166846801263300867}
   - component: {fileID: 2018186011149528460}
+  - component: {fileID: -4665877774430278832}
+  - component: {fileID: 8869939922543859532}
+  - component: {fileID: -8541477860890895678}
+  - component: {fileID: 8769810738071455421}
   m_Layer: 0
   m_Name: P_Enemy
   m_TagString: Enemy
@@ -67,6 +71,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5472a773f5b2dd4ea86815af3adeb87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-4665877774430278832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4488916604857108703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eab37a718360a15498c2c5caba7b024f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  randomSpeed: 1
+  moveSpeed: 1
+--- !u!114 &8869939922543859532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4488916604857108703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb80f0956a214b448b0306c2a93ab037, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotRatio: 0.01
+--- !u!114 &-8541477860890895678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4488916604857108703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d726d3b2ee74b9478ac2527d869bea3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  width: 1
+--- !u!114 &8769810738071455421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4488916604857108703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b33aa6578e1fa8246aff977be7d62c68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 1
+  rotSpeed: 3
 --- !u!1 &9136580652094369877
 GameObject:
   m_ObjectHideFlags: 0

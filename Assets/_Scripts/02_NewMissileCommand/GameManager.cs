@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     // manager : mng, mgr
     [SerializeField] private EnemyManager enemyMng= null;
+    [SerializeField] private UI_HUD_HP uiHudHp = null;
+    [SerializeField] private UI_HUD_Missile uiHudMissile = null;
 
     private Tower tower = null;
     private InputMouse inputMouse = null;
@@ -19,7 +21,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        enemyMng.Init(tower.gameObject);
+        tower.Init(MissileStateCallback);
+        enemyMng.Init(tower.gameObject, EnemyAttackCallback);
+        uiHudHp.Init(tower.GetHp());
+        uiHudMissile.Init(tower.GetMissileCount());
     }
 
     private void Update()
@@ -41,6 +46,24 @@ public class GameManager : MonoBehaviour
         //    Destroy(enemy.gameObject);
         //}
         enemyMng.SetDamages(_hitList);
+    }
+
+    private void EnemyAttackCallback(int _dmg)
+    {
+        int hp = tower.Damage(_dmg);
+        uiHudHp.UpdateHp(hp);
+
+        if(hp == 0)
+        {
+            // GAME OVER
+            return;
+        }
+
+    }
+    
+    private void MissileStateCallback(int _idx, bool _isFill)
+    {
+        uiHudMissile.UpdateMissileState(_idx, _isFill);
     }
 
 }

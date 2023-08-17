@@ -12,7 +12,11 @@ public class EnemyManager : MonoBehaviour
     // private PoolingObject[] enemies = null;
     // -> Init, Release
     private IPoolingObject[] enemies = null;
-    
+
+    private GameObject target = null;
+
+    private AttackDelegate attackCallback = null;
+
 
     private void Awake()
     {
@@ -27,8 +31,11 @@ public class EnemyManager : MonoBehaviour
         enemyPrefab = Resources.Load("_Prefabs\\P_Enemy") as GameObject;
     }
 
-    public void Init(GameObject _target)
+    public void Init(GameObject _target, AttackDelegate _attackCallback)
     {
+        target = _target;
+        attackCallback = _attackCallback;
+
         enemies = new IPoolingObject[maxEnemyCount];
 
         for (int i = 0; i < maxEnemyCount; ++i)
@@ -43,7 +50,8 @@ public class EnemyManager : MonoBehaviour
             go.name = "Enemy_" + i;
 
             enemies[i] = go.GetComponent<IPoolingObject>();
-            ((Enemy)enemies[i]).SetTarget(_target);
+            // ((Enemy)enemies[i]).SetTarget(_target);
+            // ((Enemy)enemies[i]).Init(_target);
             ((Enemy)enemies[i]).Release();
         }
 
@@ -90,7 +98,7 @@ public class EnemyManager : MonoBehaviour
                 if (!enemy.IsAlive())
                 {
                     enemy.SetPosition(GetRandomPosition());
-                    enemy.Init();
+                    enemy.Init(target, attackCallback);
                     break;
                 }
             }

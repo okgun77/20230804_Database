@@ -11,9 +11,14 @@ public class Tower : MonoBehaviour
     [SerializeField] private GameObject missilePrefab = null;
     [SerializeField] private int maxMissileCount = 3;
 
+    [SerializeField] private int maxHp = 3;
+    private int curHp = 0;
+
     private MissileSpawnPoint missileSpawnPoint = null;
     private Coroutine attackCoroutine = null;
     private List<Missile> missileList = new List<Missile>();
+
+    private MissileStateDelegate missileStateCallback = null;
 
 
     private void Awake()
@@ -22,15 +27,21 @@ public class Tower : MonoBehaviour
     }
 
 
-    private void Start()
+    public void Init(MissileStateDelegate _missileStateCallback)
     {
         for (int i = 0; i < maxMissileCount; ++i)
         {
-            GameObject missile = Instantiate(missilePrefab);
-            missile.name = "Missile_" + i;
-            missile.SetActive(false);   // 꺼져있으면 Find로 해도 못찾음. 우리는 목록으로 관리를 해서 상관없음.
-            missileList.Add(missile.GetComponent<Missile>());
+            GameObject go = Instantiate(missilePrefab);
+            go.name = "Missile_" + i;
+            go.SetActive(false);   // 꺼져있으면 Find로 해도 못찾음. 우리는 목록으로 관리를 해서 상관없음.
+
+            Missile missile = go.GetComponent<Missile>();
+            missile.SetNumber(i);
+            missileList.Add(missile);
         }
+        curHp = maxHp;
+
+        missileStateCallback = _missileStateCallback;
     }
 
     public void Attack(Vector3 _targetPos, Explosion.HitCallback _hitCallback = null)
@@ -119,6 +130,7 @@ public class Tower : MonoBehaviour
                 missileSpawnPoint.GetSpawnPoint(),
                 missileSpawnPoint.GetRotation(),
                 _targetPos,
+                missileStateCallback,
                 _hitCallback
                 );
         }
@@ -177,6 +189,23 @@ public class Tower : MonoBehaviour
             if (!missile.gameObject.activeSelf) return missile; // 있으면 missile 반환
         }
         return null;    // 없으면 null 반환
+    }
+
+    public int GetHp()
+    {
+        return curHp;
+    }
+
+    public int Damage(int _dmg = 1)
+    {
+        curHp -= _dmg;
+        Debug.Log("Tower HP: " + curHp);
+        return curHp;
+    }
+
+    public int GetMissileCount()
+    {
+        return maxMissileCount;
     }
 
 }
